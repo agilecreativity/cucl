@@ -2,7 +2,7 @@
   (:require
    [clj-time.core :as t]
    [clj-time.format :as f]
-   [clojure.edn :as edn :refer [read-string]]
+   [clojure.edn :refer [read-string]]
    [clojure.string :as str]
    [clojure.walk :refer [keywordize-keys]]
    [easy-config.core :as ez]
