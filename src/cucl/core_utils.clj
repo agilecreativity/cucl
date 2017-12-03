@@ -32,7 +32,7 @@
   [number-string]
   (. Integer parseInt number-string))
 
-(defn str-to-int
+(defn sotr-to-int
   "Convert string input to a number if it is not already an integer."
   [number]
   (if (integer? number)
@@ -97,7 +97,7 @@
   [input-file]
   (slurp (expand-and-normalized-path input-file)))
 
-(defn parse-args
+(defn keywordize-arguments
   "Convert list of arguments to hash map of keywords and values."
   [& args]
   (keywordize-keys (apply hash-map args)))

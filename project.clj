@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :plugins [[lein-cljfmt "0.5.6"]
             [lein-auto "0.1.3"]]
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0-RC2"]
                  [clj-time "0.13.0"]
                  [me.raynes/fs "1.4.6"]
                  [clj-ssh "0.5.14"]

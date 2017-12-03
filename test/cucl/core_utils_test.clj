@@ -14,9 +14,9 @@
   (testing "expand the ~ to home directory."
     (is (= (System/getenv "HOME") (expand-and-normalized-path "~")))))
 
-(deftest parse-args-test
+(deftest keywordize-arguments-test
   (testing "simple parse-args example"
-    (is (= (parse-args "aa" 1 "bb" 2) {:aa 1 :bb 2}))))
+    (is (= (keywordize-arguments "aa" 1 "bb" 2) {:aa 1 :bb 2}))))
 
 (deftest quote-fn-test
   (testing "quote-fn"
