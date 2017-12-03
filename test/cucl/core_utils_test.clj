@@ -13,3 +13,7 @@
 (deftest expand-and-normalized-path-test
   (testing "expand the ~ to home directory."
     (is (= (System/getenv "HOME") (expand-and-normalized-path "~")))))
+
+(deftest parse-args-test
+  (testing "simple parse-args example"
+    (is (= (parse-args "aa" 1 "bb" 2) {:aa 1 :bb 2}))))

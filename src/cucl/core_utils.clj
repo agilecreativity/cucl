@@ -4,6 +4,7 @@
    [clj-time.format :as f]
    [clojure.edn :as edn :refer [read-string]]
    [clojure.string :as str]
+   [clojure.walk :refer [keywordize-keys]]
    [easy-config.core :as ez]
    [me.raynes.fs :as fs :refer [expand-home normalized]]))
 
@@ -95,3 +96,8 @@
   "Read content of the file that understand `~` for HOME in Unix/Linux system."
   [input-file]
   (slurp (expand-and-normalized-path input-file)))
+
+(defn parse-args
+  "Convert list of arguments to hash map of keywords and values."
+  [& args]
+  (keywordize-keys (apply hash-map args)))
