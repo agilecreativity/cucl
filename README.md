@@ -4,6 +4,17 @@ My collection of frequently used functions.
 
 ## Usage
 
+``` bash
+# Clone the project
+git clone git@github.com:agilecreativity/cucl.git
+
+# Change to the local directory
+cd cucl
+
+# Install the library locally
+lein install
+```
+
 ## License
 
 Copyright © 2017 Burin Choomnuan

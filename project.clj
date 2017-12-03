@@ -1,4 +1,4 @@
-(defproject cucl "0.1.0-SNAPSHOT"
+(defproject cucl "0.1.0"
   :description "Collection of useful Clojure libraries."
   :url "http://github.com/agilecreativity"
   :license {:name "Eclipse Public License"

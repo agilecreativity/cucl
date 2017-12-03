@@ -1,12 +1,13 @@
 (ns cucl.core-utils
   (:require
-   [clojure.edn :as edn]
-   [me.raynes.fs :as fs]
-   [clj-ssh.cli]
-   [clj-ssh.ssh :as ssh]
-   [clj-ssh.agent :as agt]
+   [clj-time.core :as t]
+   [clj-time.format :as f]
+   [clojure.edn :as edn :refer [read-string]]
    [clojure.string :as str]
-   [easy-config.core :as ez]))
+   [easy-config.core :as ez]
+   [me.raynes.fs :as fs :refer [expand-home normalized]]))
+
+(def ^:const home-dir (System/getProperty "user.home"))
 
 (defn expand-and-normalized-path
   [filename]
@@ -17,97 +18,79 @@
 (defn load-edn-config
   "Load the edn config from a given file."
   [config-file]
-  (edn/read-string (slurp (expand-and-normalized-path config-file))))
+  (read-string (slurp (expand-and-normalized-path config-file))))
 
-(def ^:const home-dir (System/getProperty "user.home"))
+(defn filter-non-nil
+  "Filter out the maps value that are not nil"
+  [item]
+  (into {} (filter val item)))
 
-#_
-(defn ssh-key-path
-  "The path the private key usually `~/.ssh/id_rsa`"
-  ([]
-   (ssh-key-path home-dir))
-  ([base-dir]
-   (ssh-key-path base-dir (str/join
-                           (java.io.File/separator)
-                           (list ".ssh"
-                                 "id_rsa"))))
-  ([base-dir file-path]
-   (str (expand-and-normalized-path (str base-dir (java.io.File/separator) file-path)))))
+(defn parse-int
+  "Parse a string to a number when possible"
+  [number-string]
+  (. Integer parseInt number-string))
 
-(defn- custom-private-key-path
-  "Return the full path to the private key.
-  Normally '~/.ssh/id_rsa'"
-  ([]
-   (custom-private-key-path "id_rsa"))
-  ([ssh-private-key]
-   (ssh-key-path "~/.ssh" ssh-private-key)))
+(defn str-to-int
+  "Convert string input to a number if it is not already an integer."
+  [number]
+  (if (integer? number)
+    number
+    (parse-int number)))
 
-(defn session-config
-  "Create configuration maps from a given edn file."
-  [config-file]
-  (let [config-map (load-edn-config config-file)
-        {:keys [ssh-user ssh-host ssh-port ssh-private-key]} config-map
-        private-key-path (custom-private-key-path ssh-private-key)]
-    {:ssh-user ssh-user
-     :ssh-port ssh-port
-     :ssh-host ssh-host
-     :private-key-path private-key-path
-     }))
+(defn map-vals
+  "Given a function and a map, returns the map resulting from applying
+  the function to each value.
 
-(defn create-session
-  "Create and return the ssh connection based on the given config mapping.
-  Default to QA configuration."
-  [config-file]
-  (let [{:keys [ssh-user
-                ssh-host
-                ssh-port
-                private-key-path]} (session-config config-file)]
-    (let [agt (ssh/ssh-agent {:use-system-ssh-agent false})]
-      (ssh/add-identity agt {:user ssh-user
-                             :private-key-path private-key-path
-                             :port ssh-port})
-      (let [session (ssh/session agt
-                                 ssh-host
-                                 {:strict-host-key-checking :no
-                                  :port ssh-port})]
-        session))))
+  e.g. (map-vals inc {:a 1 :b 2 :c 3}) ;;=> {:a 2, :b 3, :c 4}
+  "
+  [f m]
+  (zipmap (keys m) (map f (vals m))))
 
-(defn ssh-execute
-  "Run the command on the remote server via the ssh wrapper."
-  [config-file command]
-  (let [session (create-session config-file)]
-    (ssh/with-connection session
-      (println (format "Input command : %s" command))
-      (let [result (ssh/ssh session {:in command})]
-        (if (= 0 (:exit result))
-          (println (result :out))
-          (println (format "Problem running the command '%s' \n exit-code: %s"
-                           command (:exit result))))))))
+(defn map-keys
+  "Given a function and a map, returns the map resulting from applying
+  the function to each key.
 
-(defn ssh-execute-session
-  "Run the command on the remote server using the active session"
-  [session command]
-  (ssh/with-connection session
-    (println (format "Input command : %s" command))
-    (let [result (ssh/ssh session {:in command})]
-      (if (= 0 (:exit result))
-        (println (result :out))
-        (println (format "Problem running the command '%s' \n exit-code: %s"
-                         command (:exit result)))))))
+  e.g. (map-keys name {:a 1 :b 2 :c 3}) ;;=> {\"a\" 1, \"b\" 2, \"c\" 3}
+  "
+  [f m]
+  (zipmap (map f (keys m)) (vals m)))
 
-;; TODO: make code more generic for general usage
-(defn scp-execute
-  "Execute the scp command using the given session."
-  [session]
-  (ssh/with-connection session
-    (let [channel (ssh/ssh-sftp session)]
-      (ssh/with-channel-connection channel
-        (ssh/sftp channel {} :cd "/opt/home/bchoomnuan")
-        (ssh/sftp channel {} :put "/Users/bchoomnuan/hello" "hello")))
-    ;; Can we re-use the session?
-    (ssh-execute-session session "ls -alt && pwd && chmod +x ./hello && ./hello")))
+(defn custom-date-format
+  "Reformat the result from the database in the preferred format."
+  [date-time]
+  (f/unparse (f/with-zone
+               (:date-time-no-ms f/formatters)
+               ;; (:date-hour-minute-second f/formatters)
+               (t/time-zone-for-id "America/New_York"))
+             date-time))
 
-#_
-;; Note: this is working code!
-(let [session (create-session "~/Dropbox/sba/sba-app-qa-read-write.edn")]
-  (scp-execute session))
+(defn pretty-format
+  [arg]
+  (cond
+    ;; If it is a date then format it like a date
+    (= org.joda.time.DateTime (type arg))
+    (custom-date-format arg)
+
+    ;; Return the normal str function
+    :else (str arg)))
+
+(defn quote-fn
+  "Quote input if they are all numbers."
+  [text]
+  (if (re-find #"^\d+?$" (.trim text))
+    identity
+    nil))
+
+(defn resources-path
+  "Return config file path from resources directory."
+  [config]
+  (str/join
+   (java.io.File/separator)
+   (list (System/getProperty "user.dir")
+         "resources"
+         config)))
+
+(defn slurp-file
+  "Read content of the file that understand `~` for HOME in Unix/Linux system."
+  [input-file]
+  (slurp (expand-and-normalized-path input-file)))
