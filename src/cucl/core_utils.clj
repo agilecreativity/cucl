@@ -13,7 +13,8 @@
   [filename]
   (-> filename
       fs/expand-home
-      fs/normalized))
+      fs/normalized
+      str))
 
 (defn load-edn-config
   "Load the edn config from a given file."
