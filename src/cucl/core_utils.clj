@@ -32,7 +32,7 @@
   [number-string]
   (. Integer parseInt number-string))
 
-(defn sotr-to-int
+(defn str-to-int
   "Convert string input to a number if it is not already an integer."
   [number]
   (if (integer? number)
@@ -101,3 +101,11 @@
   "Convert list of arguments to hash map of keywords and values."
   [& args]
   (keywordize-keys (apply hash-map args)))
+
+(defn filename-with-timestamp
+  "Create a simple filename with a given timestamp. "
+  [filename]
+  (let [now (new java.util.Date)
+        date-format "yyyyMMdd-hhmmss-SSSSSS"
+        suffix-name (.format (java.text.SimpleDateFormat. date-format) now)]
+    (format "%s-%s" filename suffix-name)))
