@@ -9,4 +9,6 @@
                  [clj-time "0.13.0"]
                  [me.raynes/fs "1.4.6"]
                  [clj-ssh "0.5.14"]
-                 [easy-config "0.1.2"]])
+                 [easy-config "0.1.2"]
+                 ;; [fs "1.3.3"]
+                 [me.raynes/fs "1.4.6"]])

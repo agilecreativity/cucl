@@ -145,3 +145,8 @@
       (str/replace (str \u001b "[1;39m") "")
 
       (str/replace (str \u001b "[0m") "")))
+
+(defn- get-extension
+  "Extract the file extension from a given file object"
+  [file-path]
+  (subs (fs/extension file-path) 1))
