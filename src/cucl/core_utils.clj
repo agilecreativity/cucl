@@ -109,3 +109,39 @@
         date-format "yyyyMMdd-hhmmss-SSSSSS"
         suffix-name (.format (java.text.SimpleDateFormat. date-format) now)]
     (format "%s-%s" filename suffix-name)))
+
+(defn suppress-ansi
+  "Suppress the ANSI color from the result of executing ssh command."
+  [text]
+  (-> text
+      (str/replace (str \u001b "[0;30m") "")
+      (str/replace (str \u001b "[1;30m") "")
+
+      (str/replace (str \u001b "[0;31m") "")
+      (str/replace (str \u001b "[1;31m") "")
+
+      (str/replace (str \u001b "[0;32m") "")
+      (str/replace (str \u001b "[1;32m") "")
+
+      (str/replace (str \u001b "[0;33m") "")
+      (str/replace (str \u001b "[1;33m") "")
+
+      (str/replace (str \u001b "[0;34m") "")
+      (str/replace (str \u001b "[1;34m") "")
+
+      (str/replace (str \u001b "[0;35m") "")
+      (str/replace (str \u001b "[1;35m") "")
+
+      (str/replace (str \u001b "[0;36m") "")
+      (str/replace (str \u001b "[1;36m") "")
+
+      (str/replace (str \u001b "[0;37m") "")
+      (str/replace (str \u001b "[1;37m") "")
+
+      (str/replace (str \u001b "[0;38m") "")
+      (str/replace (str \u001b "[1;38m") "")
+
+      (str/replace (str \u001b "[0;39m") "")
+      (str/replace (str \u001b "[1;39m") "")
+
+      (str/replace (str \u001b "[0m") "")))
