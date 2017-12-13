@@ -6,7 +6,8 @@
    [clojure.string :as str]
    [clojure.walk :refer [keywordize-keys]]
    [easy-config.core :as ez]
-   [me.raynes.fs :as fs :refer [expand-home normalized]]))
+   [me.raynes.fs :as fs :refer [expand-home normalized]]
+   [clojure.java.shell :refer [sh]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -146,7 +147,31 @@
 
       (str/replace (str \u001b "[0m") "")))
 
-(defn- get-extension
+(defn get-extension
   "Extract the file extension from a given file object"
   [file-path]
   (subs (fs/extension file-path) 1))
+
+(defn is-windows?
+  "Check for the system type and return true if it is Windows based system."
+  []
+  (re-find #"windows" (clojure.string/lower-case (System/getProperty "os.name"))))
+
+(defn is-linux?
+  "Check for the system type and return true if it is Linux based system."
+  []
+  (re-find #"linux" (clojure.string/lower-case (System/getProperty "os.name"))))
+
+(defn is-macos?
+  "Check for the system type and return true if it is MacOS based system."
+  []
+  (re-find #"darwin" (clojure.string/lower-case (System/getProperty "os.name"))))
+
+(defn find-binary
+  "Locate a binary from the Unix/Linux PATH system."
+  [binary-name]
+  (if (or (is-linux?) (is-macos?))
+    (let [{:keys [out exit err]} (clojure.java.shell/sh "which" binary-name)]
+      (if (= exit 0)
+        (clojure.string/trim-newline out)
+        (throw (Exception. (format "Can't find %s in the PATH." binary-name)))))))
