@@ -7,7 +7,9 @@
    [clojure.walk :refer [keywordize-keys]]
    [easy-config.core :as ez]
    [me.raynes.fs :as fs :refer [expand-home normalized]]
-   [clojure.java.shell :refer [sh]]))
+   [clojure.java.shell :refer [sh]]
+   [clojure.pprint :refer [print-table pprint]]
+   [clojure.reflect :refer [reflect]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -175,3 +177,8 @@
       (if (= exit 0)
         (clojure.string/trim-newline out)
         (throw (Exception. (format "Can't find %s in the PATH." binary-name)))))))
+
+(defn show-members
+  "Print the list of methods of a given object using reflection."
+  [object]
+  (print-table (sort-by :name (:members (reflect object)))))
