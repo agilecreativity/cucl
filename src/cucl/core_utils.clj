@@ -182,3 +182,12 @@
   "Print the list of methods of a given object using reflection."
   [object]
   (print-table (sort-by :name (:members (reflect object)))))
+
+;; From: https://gist.github.com/Sh4pe/eea52891dbeca5d0614d
+(defn print-members [c]
+  (->> (reflect c)
+       :members
+       (filter :return-type)
+       (sort-by :name)
+       (map #(select-keys % [:name :parameter-types :return-type]))
+       (print-table)))
