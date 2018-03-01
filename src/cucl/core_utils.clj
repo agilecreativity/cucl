@@ -2,14 +2,13 @@
   (:require
    [clj-time.core :as t]
    [clj-time.format :as f]
-   [clojure.edn :refer [read-string]]
    [clojure.string :as str]
    [clojure.walk :refer [keywordize-keys]]
-   [easy-config.core :as ez]
    [me.raynes.fs :as fs :refer [expand-home normalized]]
    [clojure.java.shell :refer [sh]]
    [clojure.pprint :refer [print-table pprint]]
-   [clojure.reflect :refer [reflect]]))
+   [clojure.reflect :refer [reflect]]
+   [aero.core :refer [read-config]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -22,8 +21,8 @@
 
 (defn load-edn-config
   "Load the edn config from a given file."
-  [config-file]
-  (read-string (slurp (expand-and-normalized-path config-file))))
+  [config]
+  (read-config (expand-and-normalized-path config)))
 
 (defn filter-non-nil
   "Filter out the maps value that are not nil"
