@@ -16,6 +16,10 @@ cd cucl
 lein install
 #+END_SRC
 
+*** TODO
+
+**** Replace =easy-config= with =juxt/aero= see =gh-utils= for example
+
 *** License
 
 Copyright © 2017-2018 Burin Choomnuan
