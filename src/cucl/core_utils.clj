@@ -190,3 +190,19 @@
        (sort-by :name)
        (map #(select-keys % [:name :parameter-types :return-type]))
        (print-table)))
+
+(defn list-files
+  "List files from a given directory matching specific patterns.
+  Example Usage:
+  (list-file \"~/projects/awesome\" {:patterns \"*.{clj,md}\"})
+  (list-file \"~/projects/awesome\" {:patterns \"*.*\"})"
+  [base-dir & [{:keys [patterns]}]]
+  (let [grammar-matcher (.getPathMatcher
+                         (java.nio.file.FileSystems/getDefault)
+                         (str "glob:" patterns))]
+    (->> (expand-and-normalized-path base-dir)
+         clojure.java.io/file
+         file-seq
+         (filter #(.isFile %))
+         (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
+         (mapv #(.getAbsolutePath %)))))
