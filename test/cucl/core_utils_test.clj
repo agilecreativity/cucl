@@ -23,3 +23,16 @@
     (is (= true (function? (quote-fn "1234"))))
     (is (= true (function? (quote-fn " 1234 "))))
     (is (= false (function? (quote-fn "not-a-number"))))))
+
+(deftest remove-ansi-test
+  (are [result arg] (= result (remove-ansi arg))
+    nil nil
+    "" ""
+    "simple text" "simple text"
+    " this is red" "\033[31m this is red"
+    " magenta background" "\033[45m magenta background"
+    " bold" "\033[1m bold"
+    " reset foreground" "\033[39m reset foreground"
+    " reset background" "\033[49m reset background"
+    " green foreground" "\033[32m green foreground"
+    " reset + rgb color" "\033[0;38;2;99;88;77m reset + rgb color"))

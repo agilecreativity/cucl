@@ -8,7 +8,8 @@
    [clojure.java.shell :refer [sh]]
    [clojure.pprint :refer [print-table pprint]]
    [clojure.reflect :refer [reflect]]
-   [aero.core :refer [read-config]]))
+   [aero.core :refer [read-config]]
+   [lambdaisland.ansi :refer [next-csi]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -18,6 +19,8 @@
       fs/expand-home
       fs/normalized
       str))
+
+(def expand-path expand-and-normalized-path)
 
 (defn load-edn-config
   "Load the edn config from a given file."
@@ -112,6 +115,15 @@
         suffix-name (.format (java.text.SimpleDateFormat. date-format) now)]
     (format "%s-%s" filename suffix-name)))
 
+;; https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
+(defn remove-ansi
+  "Remove CSI sequences from a given text."
+  [text]
+  (if-let [result (next-csi (if text text ""))]
+    (last result)
+    text))
+
+;; TODO: deprecated this and use remove-ansi instead?
 (defn suppress-ansi
   "Suppress the ANSI color from the result of executing ssh command."
   [text]
