@@ -1,5 +1,6 @@
 ** cucl - Collection of Useful Clojure Libraries
 
+[[https://circleci.com/gh/agilecreativity/cucl][https://circleci.com/gh/agilecreativity/cucl.svg?style=svg]]
 [[https://clojars.org/cucl][https://img.shields.io/clojars/v/cucl.svg]]
 [[https://jarkeeper.com/agilecreativity/cucl][https://jarkeeper.com/agilecreativity/cucl/status.svg]]
 
@@ -20,7 +21,7 @@ lein install
 #+END_SRC
 
 *** TODOs
-**** DONE Replace easy-config with =juxt/aero=
+
 *** License
 
 Copyright © 2017-2018 Burin Choomnuan
