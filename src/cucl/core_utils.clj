@@ -107,13 +107,18 @@
   [& args]
   (keywordize-keys (apply hash-map args)))
 
+(defn gen-timestamp
+  "Generate the simple timestamp base on a simple date-format"
+  ([]
+   (gen-timestamp "yyyyMMdd-hhmmss-SSSSSS"))
+  ([date-format]
+   (let [now (new java.util.Date)]
+     (.format (java.text.SimpleDateFormat. date-format) now))))
+
 (defn filename-with-timestamp
   "Create a simple filename with a given timestamp. "
   [filename]
-  (let [now (new java.util.Date)
-        date-format "yyyyMMdd-hhmmss-SSSSSS"
-        suffix-name (.format (java.text.SimpleDateFormat. date-format) now)]
-    (format "%s-%s" filename suffix-name)))
+  (format "%s-%s" filename (gen-timestamp)))
 
 ;; https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
 (defn remove-ansi
