@@ -25,7 +25,7 @@
 (defn load-edn-config
   "Load the edn config from a given file."
   [config]
-  (read-config (expand-and-normalized-path config)))
+  (read-config (expand-path config)))
 
 (defn filter-non-nil
   "Filter out the maps value that are not nil"
@@ -194,10 +194,34 @@
         (clojure.string/trim-newline out)
         (throw (Exception. (format "Can't find %s in the PATH." binary-name)))))))
 
+(defn show-methods
+  "Print the method of a given Java class.
+
+  Examples:
+  (show-methods java.util.UUID) ;; see your REPL
+  (show-methods java.lang.String)"
+  [clazz]
+  (let [declared-methods (seq (:declaredMethods (bean clazz)))
+        methods (map #(.toString %) declared-methods)]
+    (doseq [m methods]
+      (println m))
+    methods))
+
 (defn show-members
-  "Print the list of methods of a given object using reflection."
-  [object]
-  (print-table (sort-by :name (:members (reflect object)))))
+  "Print the list of methods of a given object using reflection.
+  Examples:
+  (show-members \"hello\") ;;
+  (show-members java.util.UUID) ;;=> show result as table
+  (show-members java.util.UUID :pretty-print? true) ;;=> pretty-print the result
+  " ;;
+  [object & {:keys [pretty-print?]}]
+  (let [result (sort-by :name (:members (reflect object)))]
+    ;; print it out to the REPL
+    (if pretty-print?
+      (clojure.pprint/pprint result)
+      (print-table result))
+    ;; and return the result so we can see it in our editor
+    result))
 
 ;; From: https://gist.github.com/Sh4pe/eea52891dbeca5d0614d
 (defn print-members [c]
