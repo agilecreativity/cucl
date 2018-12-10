@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+- Add `remove-nil`
+
 ## Releases
 
 ### [0.1.6] - 2018-11-29
