@@ -247,3 +247,18 @@
          (filter #(.isFile %))
          (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
          (mapv #(.getAbsolutePath %)))))
+
+(defn remove-nil
+  "Remove nil value from a given map.
+
+  Example:
+  (remove-nil {:a 1 :b nil :c 2}) ;;=> {:a 1, :c 2}"
+  [input-map]
+  (reduce (fn [m [k v]]
+            (if (nil? v)
+              m
+              (assoc m k v)))
+          {}
+          input-map))
+
+#_ (remove-nil {:a 1 :b nil :c 2})
