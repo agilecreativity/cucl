@@ -1,12 +1,12 @@
-(defproject cucl "0.1.7"
+(defproject cucl "0.1.8"
   :description "Collection of useful Clojure libraries."
   :url "http://github.com/agilecreativity/cucl"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :plugins [[lein-cljfmt "0.5.7"]
+  :plugins [[lein-cljfmt "0.6.3"]
             [lein-auto "0.1.3"]
-            [lein-cloverage "1.0.11"]]
-  :dependencies [[org.clojure/clojure "1.9.0"]
+            [lein-cloverage "1.0.13"]]
+  :dependencies [[org.clojure/clojure "1.10.0"]
                  [clj-time "0.15.1"]
                  [circleci/circleci.test "0.4.1"]
                  [me.raynes/fs "1.4.6"]
