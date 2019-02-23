@@ -9,7 +9,8 @@
    [clojure.pprint :refer [print-table pprint]]
    [clojure.reflect :refer [reflect]]
    [aero.core :refer [read-config]]
-   [lambdaisland.ansi :refer [next-csi]]))
+   [lambdaisland.ansi :refer [next-csi]]
+   [alembic.still :refer [distill lein]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -262,3 +263,19 @@
           input-map))
 
 #_ (remove-nil {:a 1 :b nil :c 2})
+
+(defn add-project-dependency
+  "Add project dependency at runtime via alembic.
+
+  Example:
+  (add-project-dependency :hara/io.file \"3.0.5\")
+  (add-project-dependency \"hara/io.file\" \"3.0.5\")
+
+  Then we can require it normally :
+  (require '[hara.io.file :as hf])
+
+  Pro tips: use this together with :M-x cljr-add-project-dependency"
+  [lib-name lib-version]
+  (let [dep-name (symbol lib-name)
+        dep-version (name lib-version)]
+    (alembic.still/distill [dep-name dep-version])))
