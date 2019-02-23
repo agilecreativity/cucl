@@ -279,3 +279,15 @@
   (let [dep-name (symbol lib-name)
         dep-version (name lib-version)]
     (alembic.still/distill [dep-name dep-version])))
+
+(comment
+  ;; Example session
+  (add-project-dependency :hara/io.file "3.0.5")
+
+  (add-project-dependency "hara/io.file" "3.0.5")
+
+  (require '[hara.io.file :as hf])
+
+  (hf/list ".")
+
+  )
