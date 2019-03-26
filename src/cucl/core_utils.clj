@@ -270,24 +270,21 @@
   Example:
   (add-project-dependency :hara/io.file \"3.0.5\")
   (add-project-dependency \"hara/io.file\" \"3.0.5\")
-
-  Then we can require it normally :
-  (require '[hara.io.file :as hf])
-
-  Pro tips: use this together with :M-x cljr-add-project-dependency"
-  [lib-name lib-version]
-  (let [dep-name (symbol lib-name)
-        dep-version (name lib-version)]
-    (alembic.still/distill [dep-name dep-version])))
+  (add-project-dependency '[hara/io.file \"3.0.5\"])
+  ;; Then require it normally
+  (require '[hara.io.file :as hf])"
+  ([dep-vector]
+   (let [[lib-name lib-version] dep-vector]
+     (add-project-dependency lib-name lib-version)))
+  ([lib-name lib-version]
+   (let [dep-name (symbol lib-name)
+         dep-version (name lib-version)]
+     (alembic.still/distill [dep-name dep-version]))))
 
 (comment
-  ;; Example session
+  ;; Example Session
   (add-project-dependency :hara/io.file "3.0.5")
-
   (add-project-dependency "hara/io.file" "3.0.5")
-
+  (add-project-dependency '[hara/io.file "3.0.5"])
   (require '[hara.io.file :as hf])
-
-  (hf/list ".")
-
-  )
+  (hf/list "."))
