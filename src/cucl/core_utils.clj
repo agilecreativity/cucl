@@ -1,16 +1,17 @@
 (ns cucl.core-utils
   (:require
+   [aero.core :refer [read-config]]
+   [alembic.still :refer [distill lein]]
+   [camel-snake-kebab.core :refer [->kebab-case-keyword ->camelCaseString] :as csk]
    [clj-time.core :as t]
    [clj-time.format :as f]
-   [clojure.string :as str]
-   [clojure.walk :refer [keywordize-keys]]
-   [me.raynes.fs :as fs :refer [expand-home normalized]]
    [clojure.java.shell :refer [sh]]
    [clojure.pprint :refer [print-table pprint]]
    [clojure.reflect :refer [reflect]]
-   [aero.core :refer [read-config]]
+   [clojure.string :as str]
+   [clojure.walk :refer [keywordize-keys postwalk]]
    [lambdaisland.ansi :refer [next-csi]]
-   [alembic.still :refer [distill lein]]))
+   [me.raynes.fs :as fs :refer [expand-home normalized]]))
 
 (def ^:const home-dir (System/getProperty "user.home"))
 
@@ -288,3 +289,37 @@
   (add-project-dependency '[hara/io.file "3.0.5"])
   (require '[hara.io.file :as hf])
   (hf/list "."))
+
+(defn kebabtize-keys
+  "Recursively transforms all map keys from strings to kabab-case-keyword."
+  [m]
+  (let [f (fn [[k v]]
+            (if (string? k)
+              [(->kebab-case-keyword k) v] [k v]))]
+    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
+(defn camelize-keys
+  "Recursively transforms all map keys from keywords, symbol or string to camelCaseString."
+  [m]
+  (let [f (fn [[k v]]
+            (if (or (keyword? k)
+                    (symbol? k)
+                    (string? k))
+              [(-> k
+                   csk/->kebab-case-keyword
+                   ->camelCaseString)
+               v]
+              [k v]))]
+    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
+(comment
+  (def test-data {"itemOne" 1 "item-Two" 2 "item-three" 3})
+
+  (kebabtize-keys test-data)  ;;=> {:item-one 1, :item-two 2, :item-three 3}
+
+  (camelize-keys test-data)   ;;=> {"itemOne" 1, "itemTwo" 2, "itemThree" 3}
+
+  (camelize-keys {:item-1 1}) ;;=>  {"item1" 1}
+
+  (camelize-keys {'item-Two 2}) ;;=> {"itemTwo" 2}
+  )
