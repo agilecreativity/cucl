@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+lein cljfmt check project.clj
+lein cljfmt check `find ./src  -type f -iname "*.clj"`
+lein cljfmt check `find ./test -type f -iname "*.clj"`

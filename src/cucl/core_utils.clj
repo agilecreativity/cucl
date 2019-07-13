@@ -46,6 +46,16 @@
     number
     (parse-int number)))
 
+(defn assoc-some
+  ;; From weavejester/medley
+  "Associates a key with a value in a map, if and only if the value is not nil."
+  ([m k v]
+   (if (nil? v) m (assoc m k v)))
+  ([m k v & kvs]
+   (reduce (fn [m [k v]] (assoc-some m k v))
+           (assoc-some m k v)
+           (partition 2 kvs))))
+
 (defn map-vals
   "Given a function and a map, returns the map resulting from applying
   the function to each value.
@@ -263,7 +273,7 @@
           {}
           input-map))
 
-#_ (remove-nil {:a 1 :b nil :c 2})
+#_(remove-nil {:a 1 :b nil :c 2})
 
 (defn add-project-dependency
   "Add project dependency at runtime via alembic.
