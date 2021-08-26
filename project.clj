@@ -12,7 +12,8 @@
                  [lambdaisland/ansi "0.1.6"]
                  [clj-commons/fs "1.6.307"]
                  [org.clojure/clojure "1.10.3" :scope "provided"]]
-  :sign-releases false
+  :repositories [["releases" {:url "https://repo.clojars.org"
+                              :creds :gpg}]]
   :aliases {"test"  ["run" "-m" "circleci.test/dir" :project/test-paths]
             "tests" ["run" "-m" "circleci.test"]
             "retest" ["run" "-m" "circleci.test.retest"]})
