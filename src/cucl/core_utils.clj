@@ -1,7 +1,6 @@
 (ns cucl.core-utils
   (:require
    [aero.core :refer [read-config]]
-   [alembic.still :refer [distill lein]]
    [camel-snake-kebab.core :refer [->kebab-case-keyword ->camelCaseString] :as csk]
    [clj-time.core :as t]
    [clj-time.format :as f]
